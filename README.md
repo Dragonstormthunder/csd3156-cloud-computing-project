@@ -1,4 +1,4 @@
-# csd3156-mobile-computing-project
+# csd3156-cloud-computing-project
 
 Emma Natalie Soh    2202191
 Lee Cjeng Jacob     2202750
