@@ -1,0 +1,41 @@
+// Use DBML to define your database structure
+https://dbdiagram.io/d
+
+//all account ids are integers
+//all order ids are integers
+//assuming price doesnt change ever
+Table Account {
+  AccountID integer [primary key]
+  ProfileImage varchar [not null]
+  Username varchar [not null]
+  Password varchar [not null]
+}
+
+Table Inventory
+{
+  InventoryID integer [primary key]
+  Name varchar [not null]
+  Description varchar
+  Price integer [not null]
+  Image varchar 
+  NumberInStock integer [not null]
+  SellerID integer [not null]
+  NumberSold integer [not null]
+}
+
+Ref: Account.AccountID < Inventory.SellerID
+
+Table Orders
+{
+  OrderID integer [primary key]
+  CustomerID integer [not null]
+  SellerID integer [not null]
+  InventoryID integer [not null]
+  Quantity integer [not null]
+  OrderGroupID integer [not null]
+  Timestamp timestamp [not null]
+}
+
+Ref : Account.AccountID < Orders.CustomerID
+Ref : Account.AccountID < Orders.SellerID
+Ref : Inventory.InventoryID < Orders.InventoryID
