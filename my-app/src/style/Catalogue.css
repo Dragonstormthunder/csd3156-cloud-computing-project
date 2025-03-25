@@ -1,0 +1,9 @@
+.subtitile_div{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.item_price {
+    font-size: 1.7em;
+}
