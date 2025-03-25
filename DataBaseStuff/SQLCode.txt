@@ -1,0 +1,36 @@
+Courtesy of ChatGpt
+
+-- Create the Account table
+CREATE TABLE Account (
+  AccountID INT PRIMARY KEY,
+  ProfileImage VARCHAR(255) NOT NULL,
+  Username VARCHAR(255) NOT NULL,
+  Password VARCHAR(255) NOT NULL
+);
+
+-- Create the Inventory table
+CREATE TABLE Inventory (
+  InventoryID INT PRIMARY KEY,
+  Name VARCHAR(255) NOT NULL,
+  Description TEXT,
+  Price INT NOT NULL,
+  Image VARCHAR(255),
+  NumberInStock INT NOT NULL,
+  SellerID INT NOT NULL,
+  NumberSold INT NOT NULL,
+  FOREIGN KEY (SellerID) REFERENCES Account(AccountID)
+);
+
+-- Create the Orders table
+CREATE TABLE Orders (
+  OrderID INT PRIMARY KEY,
+  CustomerID INT NOT NULL,
+  SellerID INT NOT NULL,
+  InventoryID INT NOT NULL,
+  Quantity INT NOT NULL,
+  OrderGroupID INT NOT NULL,
+  Timestamp TIMESTAMP NOT NULL,
+  FOREIGN KEY (CustomerID) REFERENCES Account(AccountID),
+  FOREIGN KEY (SellerID) REFERENCES Account(AccountID),
+  FOREIGN KEY (InventoryID) REFERENCES Inventory(InventoryID)
+);
