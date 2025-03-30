@@ -1,0 +1,5 @@
+Not sure how you gonna get the image into ec2 instance
+but..
+
+$cp RefreshDatabase.php /var/www/html
+$cp test_image.jpg /var/www/html
