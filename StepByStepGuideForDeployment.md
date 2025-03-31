@@ -9,7 +9,6 @@
     - [Configure the database access for the items](#configure-the-database-access-for-the-items)
     - [Testing from the EC2 Instance Console (optional)](#testing-from-the-ec2-instance-console-optional)
 
-
 ## EC2
 
 ### Settings
@@ -25,61 +24,29 @@ Storage       : 8, gp3
 
 ### Connect to EC2 instance.
 
-====== configure setup
 ```sh
-sudo apt update
-sudo apt upgrade
-sudo apt install npm nginx git php php-fpm
-```
+# configure setup
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt install npm nginx git php php-fpm php-mysql -y
 
-====== prepare project
-```sh
+# prepare project
 sudo git clone https://github.com/EzraEmma/csd3156-ezra.git
 cd csd3156-ezra/my-app
-```
 
-====== if necessary for update/push
-```sh
-git fetch
-git pull
-```
-
-====== make the build for vite reactjs
-```sh
+# make the builds for vite and reactjs
 sudo npm install
 sudo npm audit fix
 sudo npm run build
-```
 
-===== start, configure nginx
-```sh
+# start, configure nginx
+sudo systemctl stop apache2
+sudo systemctl disable apache2
 sudo systemctl start nginx
 sudo systemctl start php8.3-fpm
 sudo rm /etc/nginx/sites-enabled/default # remove the default config
 sudo nano /etc/nginx/sites-available/vite-app # we write new config
 ```
-
-> **Troubleshooting PHP not starting 1: can't find your php**
-> ```sh
-> sudo systemctl list-units --type=service | grep php
-> ```
-> Then use that version indicated.
-
-> **Troubleshooting PHP not starting 2: because Apache is Running**
->
-> Detection:
-> ```sh
-> sudo lsof -i :80
-> ```
-> ```sh
-> sudo systemctl stop apache2
-> sudo systemctl disable apache2
-> sudo systemctl restart nginx
-> sudo systemctl restart php8.3-fpm
-> ```
-> Then use that version indicated.
-
-
 
 copy in
 ```nginx
@@ -129,28 +96,42 @@ server {
 ```
 CTRL+X, Y, ENTER
 
-====== enable the site
+> **Troubleshooting PHP not starting 1: can't find your php**
+> ```sh
+> sudo systemctl list-units --type=service | grep php
+> ```
+> Then use that version indicated.
+
+> **Troubleshooting PHP not starting 2: because Apache is Running**
+>
+> Detection:
+> ```sh
+> sudo lsof -i :80
+> ```
+> ```sh
+> sudo systemctl stop apache2
+> sudo systemctl disable apache2
+> sudo systemctl restart nginx
+> sudo systemctl restart php8.3-fpm
+> ```
+> Then use that version indicated.
+
 ```sh
+# enable the site
 sudo ln -s /etc/nginx/sites-available/vite-app /etc/nginx/sites-enabled/
 sudo nginx -t # verifies nginx
 sudo systemctl restart nginx
 sudo systemctl restart php8.3-fpm
-```
 
-====== deploy build files for vite reactjs
-```sh
+# deploy build files for vite reactjs
 sudo mkdir -p /var/www/vite-app/dist
 sudo cp -r dist/* /var/www/vite-app/dist
-```
 
-====== deploy the php as it is
-```sh
+# deploy the php as it is
 sudo mkdir -p /var/www/php-api
 sudo cp -r ../DataBaseStuff/* /var/www/php-api
-```
 
-====== set correct permissions
-```sh
+# set correct permissions
 sudo chown -R www-data:www-data /var/www/vite-app
 sudo chmod -R 755 /var/www/vite-app
 sudo chown -R www-data:www-data /var/www/php-api
@@ -160,6 +141,12 @@ sudo chmod -R 755 /var/www/php-api
 ~.
 
 Other useful commands
+
+====== if necessary for update/push
+```sh
+git fetch
+git pull
+```
 
 ====== stopping/restarting nginx
 ```sh
@@ -216,22 +203,20 @@ define('DB_DATABASE', 'sofasogoodDB');
 ?>
 ```
 
-====== copy the new `dbinfo.inc` over the old one
 ```sh
+# copy the new `dbinfo.inc` over the old one
 sudo rm /var/www/php-api/dbinfo.inc
 sudo cp ../DataBaseStuff/dbinfo.inc /var/www/php-api/dbinfo.inc
-```
 
-====== restart site
-```sh
-sudo systemctl restart nginx
+# restart site
 sudo systemctl restart php8.3-fpm
+sudo systemctl restart nginx
 ```
 
 ### Testing from the EC2 Instance Console (optional)
 
 ```sh
-wget https://dev.mysql.com/get/mysql-apt-config_0.8.29-1_all.deb
+sudo wget https://dev.mysql.com/get/mysql-apt-config_0.8.29-1_all.deb
 sudo dpkg -i mysql-apt-config_0.8.29-1_all.deb
 ```
 
