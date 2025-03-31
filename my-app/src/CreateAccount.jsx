@@ -8,6 +8,12 @@ import {Link} from 'wouter'
 import './style/CreateAccount.css'
 
 const CreateAccount = () => {
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
+  const [userName, setUserName] = React.useState('');
+  const [password1, setPassword1] = React.useState('');
+  const [password2, setPassword2] = React.useState('');
+
     return <>
     <Box
       sx={{
@@ -17,7 +23,7 @@ const CreateAccount = () => {
         '& > :not(style)': {
           m: 1,
           width: 650,
-          height: 800,
+          height: 620,
         },
       }}
     >
@@ -27,17 +33,69 @@ const CreateAccount = () => {
             <img src={sofaLogo} className="logo" alt="Sofasogood logo" style={{ width: '100px', height: 'auto' }} />
             <h1>Become a member at SofaSoGood</h1>
           </div>
+
           <div style={{ display: 'flex', gap: '20px' }}>
-            <TextField required id="outlined-basic" label="First Name" variant="outlined" />
-            <TextField required id="outlined-basic" label="Last Name" variant="outlined" />
+            <TextField 
+              required 
+              id="outlined-basic" 
+              label="First Name" 
+              variant="outlined"
+              onChange={(event) => {
+                setFirstName(event.target.value);
+              }}
+            />
+            <TextField 
+              required 
+              id="outlined-basic" 
+              label="Last Name" 
+              variant="outlined" 
+              onChange={(event) => {
+                setLastName(event.target.value);
+              }}
+            />
           </div>
-          <TextField required id="outlined-basic" label="E-mail address" variant="outlined" />
-          <TextField required id="outlined-basic" label="Birthday" variant="outlined" />
-          <TextField required id="outlined-basic" label="Username" variant="outlined" />
-          <TextField  required id="outlined-basic" label="Password" variant="outlined" />
-          <TextField  required id="outlined-basic" label="Confirm Password" variant="outlined" />
+
+          <TextField 
+            required 
+            id="outlined-basic" 
+            label="Username" 
+            variant="outlined" 
+            onChange={(event) => {
+              setUserName(event.target.value);
+            }}
+          />
+          <TextField  
+            required 
+            id="outlined-basic" 
+            label="Password" 
+            variant="outlined" 
+            onChange={(event) => {
+              setPassword1(event.target.value);
+            }}
+          />
+          <TextField  
+            required
+            id="outlined-basic" 
+            label="Confirm Password" 
+            variant="outlined"
+            onChange={(event) => {
+              setPassword2(event.target.value);
+            }} 
+          />
+          
           <div>
-            <Button component={Link} variant="contained" href="/">
+            <Button 
+              component={Link} 
+              variant="contained" 
+              href="/"
+              sx={{
+                borderRadius: 2,
+                px: 3,
+                py: 1,
+                fontWeight: 'bold',
+                textTransform: 'none',
+              }}
+            >
               Create Account
             </Button>
           </div>
