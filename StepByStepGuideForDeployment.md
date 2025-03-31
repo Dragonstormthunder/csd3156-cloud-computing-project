@@ -22,6 +22,8 @@ Network       : Allow SSH/ HTTPS/ HTTP traffic
 Storage       : 8, gp3
 ```
 
+Note the public IP address: [EC2IPAddress].
+
 ### Connect to EC2 instance.
 
 ```sh
@@ -164,16 +166,16 @@ sudo tail -f /var/log/nginx/error.log
 ### Settings
 
 ```
-Create                 : standard create
-Engine                 : MySQL
-Templates              : Free tier
-DB Instance Identifier : sofasogoodDatabase
-Username               : [DBUsername]
-Master Password        : [DBPassword]
-Instance config        : db.t3.micro
-Connectivity           : connect to SofaSoGoodServer1
-VPC Security Firewall  : new -> SofaSoGoodDatabaseSecurityGroup
-Inital DB Name         : sofasogoodDB
+Create                      : standard create
+Engine                      : MySQL
+Templates                   : Free tier
+DB Instance Identifier      : sofasogoodDatabase
+Username                    : [DBUsername]
+Master Password             : [DBPassword]
+Instance config             : db.t3.micro
+Connectivity                : connect to SofaSoGoodServer1
+VPC Security Firewall       : new -> SofaSoGoodDatabaseSecurityGroup
+Inital DB Name (Add Config) : sofasogoodDB
 ```
 
 Remember the following data:
@@ -185,11 +187,14 @@ Connectivity & security -> port [DBPort]
 
 ### Configure the database access for the items
 
-====== edit `dbinfo.inc`
 ```sh
+# edit dbinfo.inc
 sudo rm ../DataBaseStuff/dbinfo.inc # if sure you want to replace
 sudo nano ../DataBaseStuff/dbinfo.inc
 ```
+
+For the EC2IPAddress make sure there's no trailing `/`.
+It should just be `http://xx.xx.xx.xx` (for both PHP & ReactJS).
 
 Replace:
 ```php
@@ -199,14 +204,29 @@ define('DB_SERVER', 'DBEndpoint');
 define('DB_USERNAME', 'DBUsername');
 define('DB_PASSWORD', 'DBPassword');
 define('DB_DATABASE', 'sofasogoodDB');
+define('DB_ACCESS_ALLOW_ORIGIN', 'EC2IPAddress');
 
 ?>
 ```
 
 ```sh
-# copy the new `dbinfo.inc` over the old one
+# edit AppInclude.jsx
+sudo nano src/AppInclude.jsx
+```
+
+Replace the API_URL with the EC2IPAddress.
+
+```sh
+# copy the new dbinfo.inc over the old one
 sudo rm /var/www/php-api/dbinfo.inc
 sudo cp ../DataBaseStuff/dbinfo.inc /var/www/php-api/dbinfo.inc
+
+# rebuild the new vite
+sudo npm run build
+# deploy build files for vite reactjs
+sudo rm -r /var/www/vite-app/dist
+sudo mkdir -p /var/www/vite-app/dist
+sudo cp -r dist/* /var/www/vite-app/dist
 
 # restart site
 sudo systemctl restart php8.3-fpm
