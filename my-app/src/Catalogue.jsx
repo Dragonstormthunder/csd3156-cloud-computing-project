@@ -17,7 +17,7 @@ const Catalogue = () => {
       {dummyData.map((item) => (
         <ImageListItem 
         key={item.img}
-        onClick={()=>setLocation(`/ViewProduct#${item.title}`)}
+        onClick={()=>setLocation(`/ViewProduct#${item.productNumber}`)}
         style={{ cursor: 'pointer' }}>
           <img
           srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}

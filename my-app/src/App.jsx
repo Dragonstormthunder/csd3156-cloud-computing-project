@@ -3,7 +3,7 @@ import  {Catalogue} from './Catalogue.jsx'
 import  {Login} from './Login.jsx'
 import { CreateAccount } from './CreateAccount.jsx'
 import { Profile } from './Profile.jsx'
-import {Dashboard} from './Dashboard.jsx'
+import {CreateListings} from './CreateListings.jsx'
 import { ViewProduct } from './ViewProduct.jsx'
 import { Cart } from './Cart.jsx'
 import {Route, Router} from 'wouter'
@@ -20,7 +20,7 @@ function App() {
         <Route path="/Catalogue" component={Catalogue} />
         <Route path="/CreateAccount" component={CreateAccount} />
         <Route path="/Profile" component={Profile} />
-        <Route path="/Dashboard" component={Dashboard} />
+        <Route path="/CreateListings" component={CreateListings} />
         <Route path="/ViewProduct" component={ViewProduct} />
         <Route path="/Cart" component={Cart} />
       </Router>

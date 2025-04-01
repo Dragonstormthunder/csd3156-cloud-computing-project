@@ -41,30 +41,6 @@ const Search = styled('div')(({ theme }) => ({
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));
-
 export default function AppBarComponent() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -97,8 +73,8 @@ export default function AppBarComponent() {
         case 'Profile':
             setLocation('/Profile');
             break;
-        case 'Dashboard':
-            setLocation('/Dashboard');
+        case 'CreateListings':
+            setLocation('/CreateListings');
             break;
         case 'Logout':
             setLocation('/');
@@ -126,7 +102,7 @@ export default function AppBarComponent() {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={()=>handleMenuItemClick('Profile')}>Profile</MenuItem>
-      <MenuItem onClick={()=>handleMenuItemClick('Dashboard')}>Dashboard</MenuItem>
+      <MenuItem onClick={()=>handleMenuItemClick('CreateListings')}>Create Listings</MenuItem>
       <MenuItem onClick={()=>handleMenuItemClick('Logout')}>LogOut</MenuItem>
     </Menu>
   );
@@ -154,19 +130,7 @@ export default function AppBarComponent() {
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
+        <p>Cart</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -178,7 +142,7 @@ export default function AppBarComponent() {
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
+        <p>Account</p>
       </MenuItem>
     </Menu>
   );
@@ -194,7 +158,7 @@ export default function AppBarComponent() {
             aria-label="open drawer"
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            {/* <MenuIcon /> */}
           </IconButton>
           <Typography
             variant="h6"
@@ -213,29 +177,11 @@ export default function AppBarComponent() {
           >
             SOFASOGOOD
           </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit" component={Link} href='/Cart'>
               <Badge badgeContent={4} color="error">
                 <ShoppingCartIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
               </Badge>
             </IconButton>
             <IconButton
