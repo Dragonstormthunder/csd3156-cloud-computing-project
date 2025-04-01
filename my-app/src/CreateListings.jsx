@@ -9,9 +9,11 @@ import {Box,
     CardContent,
     Typography,
     IconButton,
+    styled,
     Paper} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {Link} from 'wouter'
 import AppBarComponent from './AppBarComponent.jsx';
 
@@ -29,6 +31,18 @@ const style = {
   p: 4,
   padding: '20px'
 };
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
 const CreateListings = () => {
   const [open, setOpen] = React.useState(false);
@@ -109,15 +123,28 @@ const CreateListings = () => {
                       setProductPrice(event.target.value);
                     }}
                   />
-                  <TextField 
-                    required 
-                    id="outlined-basic" 
-                    label="Product Image" 
-                    variant="outlined"
-                    onChange={(event) => {
-                      setProductImg(event.target.value);
-                    }}
-                  />
+                  <div style={{ display: 'flex'}}>
+                    <Button
+                      component="label"
+                      role={undefined}
+                      variant="contained"
+                      tabIndex={-1}
+                      startIcon={<CloudUploadIcon />}
+                      sx={{
+                        borderRadius: 2,
+                        px: 3,
+                        py: 1,
+                        fontWeight: 'bold',
+                        textTransform: 'none'
+                      }}
+                    >
+                      Upload Images
+                      <VisuallyHiddenInput
+                        type="file"
+                        onChange={(event) => setProductImg(event.target.files)}
+                      />
+                    </Button>
+                  </div>
                   <TextField 
                     required 
                     id="outlined-basic" 
