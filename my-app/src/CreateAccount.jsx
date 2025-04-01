@@ -2,10 +2,24 @@ import React from 'react';
 import {Box,
     TextField, 
     Button,
+    styled,
     Paper} from '@mui/material';
 import sofaLogo from './assets/sofasogoodicon.png'
 import {Link} from 'wouter'
 import './style/CreateAccount.css'
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
 const CreateAccount = () => {
   const [firstName, setFirstName] = React.useState('');
@@ -13,6 +27,7 @@ const CreateAccount = () => {
   const [userName, setUserName] = React.useState('');
   const [password1, setPassword1] = React.useState('');
   const [password2, setPassword2] = React.useState('');
+  const [img, setImg] = React.useState('');
 
     return <>
     <Box
@@ -82,7 +97,28 @@ const CreateAccount = () => {
               setPassword2(event.target.value);
             }} 
           />
-          
+          <div style={{ display: 'flex'}}>
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              sx={{
+                borderRadius: 2,
+                px: 3,
+                py: 1,
+                fontWeight: 'bold',
+                textTransform: 'none'
+              }}
+            >
+              Upload Images
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event) => setImg(event.target.files)}
+              />
+            </Button>
+          </div>
           <div>
             <Button 
               component={Link} 
