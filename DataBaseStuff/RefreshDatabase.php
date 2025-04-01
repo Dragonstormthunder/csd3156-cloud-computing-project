@@ -4,6 +4,7 @@
 <body>
    <h1>RefreshDatabasePage</h1>
    <?php
+
    echo "Trying to start connection";
    $connection = mysqli_connect(hostname: DB_SERVER, username: DB_USERNAME, password: DB_PASSWORD);
    if (mysqli_connect_errno()) {
