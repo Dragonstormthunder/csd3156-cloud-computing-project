@@ -8,6 +8,8 @@
    $connection = mysqli_connect(hostname: DB_SERVER, username: DB_USERNAME, password: DB_PASSWORD);
    if (mysqli_connect_errno()) {
       echo "Failed to connect to MySQL: " . mysqli_onnecterror();
+   } else {
+      echo "Connection successful";
    }
    $database = mysqli_select_db(mysql: $connection, database: DB_DATABASE);
 
