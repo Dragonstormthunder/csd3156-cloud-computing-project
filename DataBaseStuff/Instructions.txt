@@ -2,4 +2,6 @@ Not sure how you gonna get the image into ec2 instance
 but..
 
 $cp RefreshDatabase.php /var/www/html
-$cp test_image.jpg /var/www/html
+
+//copy the entire sofa(images) folder into 
+$cp sofa		/var/www/html
