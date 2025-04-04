@@ -7,7 +7,7 @@ import { CreateListings } from "./CreateListings.jsx";
 import { ViewProduct } from "./ViewProduct.jsx";
 import { Cart } from "./Cart.jsx";
 import { Route, Router } from "wouter";
-import { API_URL } from "./AppInclude.jsx";
+import { PHP_URL } from "./AppInclude.jsx";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -15,7 +15,7 @@ function App() {
   const [timestamp, setTimestamp] = useState("Loading...");
 
   useEffect(() => {
-    fetch(`${API_URL}/HelloWorldTimestamp.php`)
+    fetch(`${PHP_URL}/HelloWorldTimestamp.php`)
       .then((response) => response.json())
       .then((data) => setTimestamp(data.timestamp))
       //.then((response) => console.log(response))
