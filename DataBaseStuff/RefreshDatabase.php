@@ -1,3 +1,14 @@
+<!-- 
+ * @file    RefreshDatabase.php
+ * @author  Goh Jun Lin Wayne
+ * @par     Email: 2200628\@sit.singaporetech.edu.sg
+ * @par     Course: CSD3156 Mobile and Cloud Computing
+ * @par     Project: Cloud Computing Project
+ *
+ * @brief   This file creates a php page to create and populate a database
+ *
+ * This database will be displayed in a format so it is easily viewed
+-->
 <?php include "dbinfo.inc"; ?>
 <html>
    <body>
@@ -280,8 +291,19 @@
 
 
 <?php 
-   /* 
-      PHP Functions
+   /**
+    * Verifies if the required tables exist and creates them if they do not.
+    *
+    * This function checks the existence of three essential tables (`Account`, `Inventory`, 
+    * and `Orders`) in the database. If any of these tables do not exist, the function 
+    * triggers the creation of the missing tables using the respective creation functions.
+    * It also sets the global MySQL variable `max_allowed_packet` to 64MB to handle larger queries.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param string $dbName The name of the database to check the tables in.
+    *
+    * @return void This function does not return any value. It performs table existence checks
+    *              and creates missing tables.
    */
    function VerifyTables($connection, $dbName) {
       //check whether account table exists
@@ -302,7 +324,19 @@
       }
       $connection->query("SET GLOBAL max_allowed_packet=64*1024*1024");
    }
-
+   /**
+    * Checks if a table exists in the specified database.
+    *
+    * This function queries the `information_schema` to check if a given table exists 
+    * in the provided database. It uses `SELECT` to check for the table's existence 
+    * and returns a boolean value based on the result.
+    *
+    * @param string $tableName The name of the table to check.
+    * @param mysqli $_connection The database connection object.
+    * @param string $dbName The name of the database to check for the table in.
+    *
+    * @return bool Returns `true` if the table exists, `false` otherwise.
+   */
    function TableExists($tableName, $connection, $dbName) {
       $t = mysqli_real_escape_string($connection, $tableName);
       $d = mysqli_real_escape_string($connection, $dbName);
@@ -314,8 +348,22 @@
 
       return false;
    }
-
-   /* Creation of the account table */
+   /**
+    * Creates the `Account` table in the database.
+    *
+    * This function creates a table named `Account` with the following columns:
+    * - `AccountID`: Primary key, auto-increment integer.
+    * - `ProfileImage`: Stores the profile image as a `LONGBLOB`.
+    * - `Username`: A `VARCHAR(20)` field for the username.
+    * - `Password`: A `VARCHAR(20)` field for the user's password.
+    * 
+    * If the table creation fails, an error message is displayed.
+    *
+    * @param mysqli $_connection The database connection object.
+    *
+    * @return void This function does not return any value. It creates the `Account` table
+    *              in the database.
+   */
    function CreateAccountTable($connection)
    {
        $query = "
@@ -329,7 +377,26 @@
           
        if(!mysqli_query($connection, $query)) echo("<p>Error creating table.</p>");
    }
-   /* Creation of the Inventory table */
+   /**
+    * Creates the `Inventory` table in the database.
+    *
+    * This function creates a table named `Inventory` with the following columns:
+    * - `InventoryID`: Primary key, auto-increment integer.
+    * - `Name`: The name of the inventory item (`VARCHAR(255)`).
+    * - `Description`: A `TEXT` field for the item description.
+    * - `Price`: The price of the item (integer).
+    * - `Image`: A `LONGBLOB` to store the image of the inventory item.
+    * - `NumberInStock`: The number of items available in stock.
+    * - `SellerID`: A foreign key referencing the `Account` table's `AccountID`.
+    * - `NumberSold`: The number of items sold.
+    *
+    * If the table creation fails, an error message is displayed.
+    *
+    * @param mysqli $_connection The database connection object.
+    *
+    * @return void This function does not return any value. It creates the `Inventory` table
+    *              in the database.
+   */
    function CreateInventoryTable($connection)
    {
       $query = "
@@ -348,7 +415,26 @@
          
       if(!mysqli_query($connection, $query)) echo("<p>Error creating table.</p>");
    }
-   /* Creation of the orders table */
+   /**
+    * Creates the `Orders` table in the database.
+    *
+    * This function creates a table named `Orders` with the following columns:
+    * - `OrderID`: Primary key, auto-increment integer.
+    * - `CustomerID`: A foreign key referencing the `Account` table's `AccountID`.
+    * - `SellerID`: A foreign key referencing the `Account` table's `AccountID`.
+    * - `InventoryID`: A foreign key referencing the `Inventory` table's `InventoryID`.
+    * - `Quantity`: The quantity of items ordered.
+    * - `OrderGroupID`: A unique identifier for the order group.
+    * - `Timestamp`: A timestamp for when the order was created.
+    *
+    * If the table creation fails, an error message is displayed.
+    *
+    * @param mysqli $_connection The database connection object.
+    *
+    * @return void This function does not return any value. It creates the `Orders` table
+    *              in the database.
+   
+   */
    function CreateOrdersTable($connection)
    {
       $query = "
@@ -368,14 +454,45 @@
          
       if(!mysqli_query($connection, $query)) echo("<p>Error creating table.</p>");
    }
-   
+   /**
+    * Drops specified tables from the database.
+    *
+    * This function removes the tables `Orders`, `Inventory`, and `Account` from the database, 
+    * if they exist. It uses the `DROP TABLE IF EXISTS` SQL command to ensure that no error 
+    * occurs if the tables do not exist. This function is useful for database resets or 
+    * cleaning up the schema.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param string $dbName The name of the database (not directly used in the function 
+    *                       but included for future flexibility or modifications).
+    *
+    * @return void This function does not return any value. It performs the operation 
+    *              to drop the specified tables.
+   */
    function DropTables($connection, $dbName): void
    {   
       mysqli_query($connection, "DROP TABLE IF EXISTS Orders;");
       mysqli_query($connection, "DROP TABLE IF EXISTS Inventory;");
       mysqli_query($connection, "DROP TABLE IF EXISTS Account;");
    }
-
+   /**
+    * Loads sample account and inventory data into the database.
+    *
+    * This function populates the database with initial data by creating user accounts 
+    * and adding inventory items, specifically sofas. It also creates orders for various 
+    * inventory items and associates them with customers and sellers.
+    * The data is loaded using predefined profile images and inventory descriptions.
+    * 
+    * The function performs the following tasks:
+    * 1. Loads sample account data with images and user information.
+    * 2. Loads sofa inventory data, including names, descriptions, prices, stock, and images.
+    * 3. Creates orders for different inventory items and stores them in the Orders table.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param string $dbName The name of the database being used (not utilized in the function but included as a parameter).
+    * 
+    * @return void This function does not return any value. It performs multiple insert operations to populate the database.
+   */
    function LoadData($connection,$dbName): void{
 
       $profileImageFileLoc = "profile/";
@@ -425,13 +542,46 @@
          "Neutral beige sofa with modern cushions, a versatile choice for any home style."
      );
 
+     $sofaNames =array(
+      "Coastal Blue Velvet Sofa",
+      "Urban Gray Minimalist Sofa",
+      "Sunbeam Mustard Loveseat",
+      "Harmony Two-Tone Cushion Sofa",
+      "Zest Yellow Mid-Century Sofa",
+      "Metro Black Leather Lounge",
+      "Amber Classic Fabric Sofa",
+      "Royal Blue Tufted Sofa",
+      "Nordic White Modern Sofa",
+      "Olive Plush Floor Lounger",
+      "Blush Pink Accent Chair",
+      "Skyline Sectional Sofa",
+      "Galaxy Gray Statement Sofa",
+      "Rustic Red & Brown Sofa",
+      "Emerald Roll-Arm Velvet Sofa",
+      "Cream Sunlit Modern Sofa",
+      "Tangerine Leather Statement Sofa",
+      "Cloud Gray Contemporary Sofa",
+      "Family Comfort L-Shaped Sofa",
+      "Golden Luxe Draped Sofa",
+      "Vintage Blue Tufted Sofa",
+      "Regal Chesterfield Leather Sofa",
+      "Cognac Mid-Century Sofa",
+      "Forest Green Velvet Lounge",
+      "Slate Gray Sectional Sofa",
+      "Warm Beige Living Set",
+      "Boho Natural Frame Sofa",
+      "Navy Luxe Velvet Sofa",
+      "Ivory Minimalist Sofa",
+      "Neutral Chic Cushion Sofa"
+   );
+
       for($i = 0; $i < 30 ;++$i)
       {
          if($i == 10)
          {
             $additionalFormatting = "";
          }
-         LoadInventory($connection,$inventoryText . $i ,$sofaDesc[$i],10.00,$sofaImageFileLoc . $SofaName . $additionalFormatting . $i . ".jpg",10,0,2);
+         LoadInventory($connection,$sofaNames[$i] ,$sofaDesc[$i],10.00,$sofaImageFileLoc . $SofaName . $additionalFormatting . $i . ".jpg",10,0,2);
       }
 
       //LoadInventory($connection,"inventory1","description",10.00,"test_image.jpg",10,0,2);
@@ -450,7 +600,19 @@
       AddOrders($connection,4,1,10,1,5,'2025-03-30 12:04:00');
       AddOrders($connection,4,1,15,1,5,'2025-03-30 12:04:00');
    }
-
+   /**
+    * Loads the account into database
+    *
+    * This function takes in the database connection, profile image path,
+    * user name, and password as parameters and Adds the account data.
+    *
+    * @param mysqli $connection The database connection object.
+    * @param string $_profileImagePath The file path to the user's profile image.
+    * @param string $_userName The username for the account.
+    * @param string $_password The password associated with the account.
+    * 
+    * @return void This function does not return any value.
+   */
    function LoadAccount($connection,$_profileImagePath,$_userName,$_password) : void{
 
       $image = null;
@@ -494,7 +656,25 @@
          }
       }
    }
-   
+   /**
+    * Loads inventory data into the database.
+    *
+    * This function takes in inventory item details such as name, description, price, image path, 
+    * number in stock, number sold, and seller ID. It checks if the image exists and, if so, stores 
+    * the image in the database along with the rest of the inventory information. If no image is provided, 
+    * it inserts the inventory data without an image.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param string $_name The name of the inventory item.
+    * @param string $_description The description of the inventory item.
+    * @param float $_price The price of the inventory item.
+    * @param string $_imagePath The file path to the inventory item's image.
+    * @param int $_numberInStock The number of items in stock.
+    * @param int $_numberSold The number of items sold.
+    * @param int $_sellerID The ID of the seller associated with the inventory item.
+    * 
+    * @return void This function does not return any value. It directly inserts data into the database.
+   */
    function LoadInventory($_connection,$_name,$_description,$_price,$_imagePath,$_numberInStock,$_numberSold,$_sellerID)
    {
       $image = null;
@@ -543,7 +723,23 @@
       }
    }
 
-   //manually insert orders
+   /**
+    * Inserts a new order into the Orders table.
+    *
+    * This function takes in details about a customer's order, including customer ID, seller ID, 
+    * inventory ID, quantity, order group ID, and timestamp, then inserts this information into 
+    * the Orders table in the database.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param int $_customerID The ID of the customer making the order.
+    * @param int $_sellerID The ID of the seller associated with the order.
+    * @param int $_inventoryID The ID of the inventory item being ordered.
+    * @param int $_quantity The quantity of the item being ordered.
+    * @param int $_orderGroupID The group ID to associate orders within a group.
+    * @param string $_timeStamp The timestamp when the order was placed.
+    * 
+    * @return void This function does not return any value. It performs an insert operation.
+    */
    function LoadOrders($_connection,$_customerID,$_sellerID,$_inventoryID,$_quantity,$_orderGroupID,$_timeStamp)
    {
       $query = "INSERT INTO Orders ( `CustomerID`, `SellerID`, InventoryID, `Quantity`,OrderGroupID ,`Timestamp`) 
@@ -564,7 +760,19 @@
          mysqli_stmt_close($stmt);
       }
    }
-
+   /**
+    * Checks if the required quantity of an item is available in stock.
+    *
+    * This function queries the Inventory table to retrieve the current stock quantity 
+    * for a specific inventory item and compares it with the requested quantity.
+    * It returns true if enough stock is available, otherwise false.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param int $_inventoryID The ID of the inventory item to check stock for.
+    * @param int $_quantity The quantity requested by the customer.
+    * 
+    * @return bool Returns true if the requested quantity is available, false otherwise.
+   */
    function CheckStock($_connection,$_inventoryID,$_quantity)
    {
       $query = "SELECT NumberInStock FROM Inventory WHERE InventoryID = ?";
@@ -583,12 +791,35 @@
       echo "error checking inventory";
       return false;
    }
-   
+   /**
+    * Updates the inventory and sold quantity when an item is sold.
+    *
+    * This function decreases the inventory stock and increases the number of items sold
+    * in the Inventory table based on the quantity of items sold.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param int $_inventoryID The ID of the inventory item being sold.
+    * @param int $_quantity The quantity of the item being sold.
+    * 
+    * @return void This function does not return any value. It updates the inventory data.
+   */
    function SoldInventory($_connection,$_inventoryID,$_quantity): void
    {
       ChangeStock($_connection,$_inventoryID,-$_quantity);
       ChangeInSold($_connection,$_inventoryID,$_quantity);
    }
+   /**
+    * Updates the stock quantity of an inventory item.
+    *
+    * This function adjusts the number of items in stock by a specified change amount 
+    * (positive or negative) for a given inventory item in the Inventory table.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param int $_inventoryID The ID of the inventory item to update.
+    * @param int $_changeInStock The change in stock quantity (can be positive or negative).
+    * 
+    * @return void This function does not return any value. It updates the inventory stock.
+   */
    function ChangeStock($_connection,$_inventoryID,$_changeInStock):void{
       $query = "UPDATE Inventory SET NumberInStock = NumberInStock + ? WHERE InventoryID = ?";
       if ($updateStmt = mysqli_prepare($_connection, $query)) {
@@ -601,7 +832,18 @@
          mysqli_stmt_close($updateStmt);
       }
    }
-
+   /**
+    * Updates the number of items sold for a specific inventory item.
+    *
+    * This function increments the number of items sold in the Inventory table for a 
+    * given inventory item by a specified quantity.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param int $_inventoryID The ID of the inventory item to update.
+    * @param int $_changeInSold The change in the number of items sold (should be positive).
+    * 
+    * @return void This function does not return any value. It updates the sold quantity.
+   */
    function ChangeInSold($_connection,$_inventoryID,$_changeInSold):void{
       $query = "UPDATE Inventory SET NumberSold = NumberSold + ? WHERE InventoryID = ?";
       if ($updateStmt = mysqli_prepare($_connection, $query)) {
@@ -615,6 +857,23 @@
       }
    }
 
+   /**
+    * Adds a new order if there is sufficient stock, and updates inventory.
+    *
+    * This function first checks if there is enough stock available for the requested item. 
+    * If there is enough stock, it loads the order into the database and then updates the 
+    * inventory by adjusting the stock and the number of items sold.
+    *
+    * @param mysqli $_connection The database connection object.
+    * @param int $_customerID The ID of the customer placing the order.
+    * @param int $_sellerID The ID of the seller for the order.
+    * @param int $_inventoryID The ID of the inventory item being ordered.
+    * @param int $_quantity The quantity of the item being ordered.
+    * @param int $_orderGroupID The ID of the order group for grouping related orders.
+    * @param string $_timeStamp The timestamp of when the order is placed.
+    * 
+    * @return void This function does not return any value. It performs order processing and inventory updates.
+   */
    function AddOrders($_connection,$_customerID,$_sellerID,$_inventoryID,$_quantity,$_orderGroupID,$_timeStamp)
    {
       if(CheckStock($_connection,$_inventoryID,$_quantity))
