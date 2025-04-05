@@ -39,6 +39,13 @@
       header("Location: " . $_SERVER['PHP_SELF']);
       exit; // Stop further script execution
    }
+
+   if (isset($_POST['testConfirm'])) {
+      testConfirm(connection: $connection, dbName: DB_DATABASE);
+      // Redirect to avoid resubmission on page refresh
+      header("Location: " . $_SERVER['PHP_SELF']);
+      exit; // Stop further script execution
+   }
    ?>
 
    <form method="post">
@@ -47,6 +54,8 @@
       <input type="submit" name="dropTables" value="Must Drop Tables Ahhhhh" />
 
       <input type="submit" name="loadData" value="Load Data Yay" />
+
+      <input type="submit" name="testConfirm" value="test Data Yeahhh" />
    </form>
 
    </form>
@@ -634,6 +643,12 @@ function LoadData($connection, $dbName): void
    AddOrders($connection, 3, 1, 5, 1, 4, '2025-03-30 12:03:00');
    AddOrders($connection, 4, 1, 10, 1, 5, '2025-03-30 12:04:00');
    AddOrders($connection, 4, 1, 15, 1, 5, '2025-03-30 12:04:00');
+
+   LoadOrders($connection, 4, 1, 15,10,6, '2025-03-30 12:04:00', false);
+}
+
+function testConfirm($connection, $dbName) : void{
+   ConfirmOrderGroup($connection,6);
 }
 /**
  * Loads the account into database
@@ -871,5 +886,41 @@ function AddOrders($_connection, $_customerID, $_sellerID, $_inventoryID, $_quan
    } else {
       echo "not enough stock";
    }
+}
+
+function ConfirmOrderGroup($_connection ,$_orderGroup)
+{
+   $query = "SELECT
+   Inventory.InventoryID, 
+   Inventory.NumberInStock,
+   Orders.Quantity,
+   Orders.OrderGroupID,
+   Orders.OrderConfirmed
+   FROM Inventory 
+   INNER JOIN Orders ON Orders.InventoryID = Inventory.InventoryID
+   WHERE Orders.OrderGroupID = ?";
+
+   $stmt = $_connection->prepare($query);
+   $stmt->bind_param("i", $_orderGroup);
+   $stmt->execute();
+   $result = $stmt->get_result();
+   //check if all number in stock < quantity
+   while ($query_data = mysqli_fetch_row($result)) {
+      if($query_data[1] < $query_data[2])
+      {
+         return;
+      }
+   }
+   mysqli_data_seek($result, 0);  // Reset result set pointer for the second loop
+
+   //update data
+   while ($query_data = mysqli_fetch_row($result)) {
+      SoldInventory($_connection, $query_data[0], $query_data[2]);
+      $query = "UPDATE Orders SET OrderConfirmed = true WHERE Orders.OrderGroupID = ?";
+      $stmt = $_connection->prepare($query);
+      $stmt->bind_param("i", $_orderGroup);
+      $stmt->execute();
+   }
+
 }
 ?>
