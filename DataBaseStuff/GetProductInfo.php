@@ -26,7 +26,18 @@ function TableExists($tableName, $connection, $dbName) {
  }
  if(TableExists("Inventory",$connection,DB_DATABASE)){
 
-    $sql = "SELECT * From Inventory WHERE  Inventory.InventoryID = ? ";
+    $sql = "SELECT 
+    Inventory.InventoryID,
+    Inventory.Name,
+    Inventory.Description,
+    Inventory.Price,
+    Inventory.Image,
+    Inventory.NumberInStock,
+    Inventory.SellerID,
+    Inventory.NumberSold,
+    Account.Username,
+    Account.ProfileImage
+     From Inventory INNER JOIN Account ON Inventory.SellerID = Account.AccountID WHERE  Inventory.InventoryID = ? ";
     $stmt = $connection->prepare($sql);
     $stmt->bind_param("s", $ID);
     $stmt->execute();
@@ -44,6 +55,8 @@ function TableExists($tableName, $connection, $dbName) {
                     "Stock" => $query_data[5],
                     "SellerID" => $query_data[6],
                     "SoldAmt" => $query_data[7],
+                    "SellerUserName" => $query_data[8],
+                    "SellerProfilePicture" => $query_data[9]
         ];
         $response[] = $data;
 
