@@ -1,3 +1,13 @@
+/*!************************************************************************
+ * \file AppBarComponent.jsx
+* \author	 Kenzie Lim  | kenzie.l\@digipen.edu
+ * \par Course: CSD3156
+ * \date 25/03/2025
+ * \brief
+ * This file defines the frontend for AppBarComponent for all pages.
+ *
+ * Copyright 2025 DigiPen Institute of Technology Singapore All Rights Reserved
+ **************************************************************************/
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import {Box,
@@ -49,6 +59,7 @@ export default function AppBarComponent() {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const id = sessionStorage.getItem('persistedId');
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,12 +82,13 @@ export default function AppBarComponent() {
     handleMenuClose();
     switch(setting) {
         case 'Profile':
-            setLocation('/Profile');
+            setLocation(`/Profile/${id}`);
             break;
         case 'CreateListings':
-            setLocation('/CreateListings');
+            setLocation(`/CreateListings/${id}`);
             break;
         case 'Logout':
+            sessionStorage.setItem('persistedId', 0);
             setLocation('/');
             break;
         default:
@@ -125,10 +137,10 @@ export default function AppBarComponent() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit" component={Link} href='/Cart'>
-          <Badge badgeContent={4} color="error">
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit" component={Link} href={`/Cart/${id}`}>
+          {/* <Badge badgeContent={4} color="error"> */}
             <ShoppingCartIcon />
-          </Badge>
+          {/* </Badge> */}
         </IconButton>
         <p>Cart</p>
       </MenuItem>
@@ -164,7 +176,7 @@ export default function AppBarComponent() {
             variant="h6"
             noWrap
             component="a"
-            href='/Catalogue'
+            href={`/Catalogue/${id}`}
             sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
@@ -179,10 +191,10 @@ export default function AppBarComponent() {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit" component={Link} href='/Cart'>
-              <Badge badgeContent={4} color="error">
+            <IconButton size="large" aria-label="show 4 new mails" color="inherit" component={Link} href={`/Cart/${id}`}>
+              {/* <Badge badgeContent={4} color="error"> */}
                 <ShoppingCartIcon />
-              </Badge>
+              {/* </Badge> */}
             </IconButton>
             <IconButton
               size="large"

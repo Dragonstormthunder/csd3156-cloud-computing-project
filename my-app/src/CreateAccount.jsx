@@ -1,12 +1,22 @@
-import React from 'react';
+/*!************************************************************************
+ * \file CreateAccount.jsx
+* \author	 Kenzie Lim  | kenzie.l\@digipen.edu
+ * \par Course: CSD3156
+ * \date 25/03/2025
+ * \brief
+ * This file defines the frontend for CreateAccount Page.
+ *
+ * Copyright 2025 DigiPen Institute of Technology Singapore All Rights Reserved
+ **************************************************************************/
+
+import React, {useState, useEffect} from 'react';
 import {Box,
     TextField, 
     Button,
     styled,
     Paper} from '@mui/material';
 import sofaLogo from './assets/sofasogoodicon.png'
-import {Link} from 'wouter'
-import './style/CreateAccount.css'
+import {Link, useLocation} from 'wouter'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const VisuallyHiddenInput = styled('input')({
@@ -22,12 +32,49 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const CreateAccount = () => {
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [userName, setUserName] = React.useState('');
-  const [password1, setPassword1] = React.useState('');
-  const [password2, setPassword2] = React.useState('');
-  const [img, setImg] = React.useState('');
+  // const [firstName, setFirstName] = React.useState('');
+  // const [lastName, setLastName] = React.useState('');
+  const [userName, setUserName] = useState('');
+  const [password1, setPassword1] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [img, setImg] = useState('');
+  const [pwMatch, setPwMatch] = useState(false);
+  const [, setLocation] = useLocation();
+
+  const handleSubmit = () => {
+    axios.post(`${PHP_URL}/PostNewAccount.php`, {
+      Username: userName,
+      pw: password1,
+      ImageURL: img,
+    },{
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
+
+    setLocation('/');
+  }
+
+  useEffect(() => {
+      if (password1 == password2 &&
+        password1 != '' &&
+        password2 != '' && 
+        userName != ''
+      ) {
+        setPwMatch(true)
+      }
+      else
+      {
+        setPwMatch(false);
+      }
+    }, [password1, password2,userName]);
 
     return <>
     <Box
@@ -49,12 +96,13 @@ const CreateAccount = () => {
             <h1>Become a member at SofaSoGood</h1>
           </div>
 
-          <div style={{ display: 'flex', gap: '20px' }}>
+          {/* <div style={{ display: 'flex', gap: '20px' }}>
             <TextField 
               required 
               id="outlined-basic" 
               label="First Name" 
               variant="outlined"
+              value={firstName}
               onChange={(event) => {
                 setFirstName(event.target.value);
               }}
@@ -68,13 +116,14 @@ const CreateAccount = () => {
                 setLastName(event.target.value);
               }}
             />
-          </div>
+          </div> */}
 
           <TextField 
             required 
             id="outlined-basic" 
             label="Username" 
             variant="outlined" 
+            value={userName}
             onChange={(event) => {
               setUserName(event.target.value);
             }}
@@ -82,8 +131,10 @@ const CreateAccount = () => {
           <TextField  
             required 
             id="outlined-basic" 
+            type='password'
             label="Password" 
             variant="outlined" 
+            value={password1}
             onChange={(event) => {
               setPassword1(event.target.value);
             }}
@@ -91,39 +142,29 @@ const CreateAccount = () => {
           <TextField  
             required
             id="outlined-basic" 
+            type='password'
             label="Confirm Password" 
             variant="outlined"
+            value={password2}
             onChange={(event) => {
               setPassword2(event.target.value);
             }} 
           />
-          <div style={{ display: 'flex'}}>
-            <Button
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-              sx={{
-                borderRadius: 2,
-                px: 3,
-                py: 1,
-                fontWeight: 'bold',
-                textTransform: 'none'
-              }}
-            >
-              Upload Images
-              <VisuallyHiddenInput
-                type="file"
-                onChange={(event) => setImg(event.target.files)}
-              />
-            </Button>
-          </div>
+          <TextField  
+            required
+            id="outlined-basic" 
+            label="Image" 
+            variant="outlined"
+            onChange={(event) => {
+              setImg(event.target.value);
+            }} 
+          />
+          {img != '' && <img src={img} alt="account logo" />}
           <div>
-            <Button 
-              component={Link} 
-              variant="contained" 
-              href="/"
+            {pwMatch &&
+            <Button
+              variant="contained"
+              onClick={() => handleSubmit()}
               sx={{
                 borderRadius: 2,
                 px: 3,
@@ -133,7 +174,7 @@ const CreateAccount = () => {
               }}
             >
               Create Account
-            </Button>
+            </Button>}
           </div>
         </Paper>
     </Box>
