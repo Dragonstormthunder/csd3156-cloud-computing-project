@@ -4,29 +4,14 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Content-Type: application/x-www-form-urlencoded");
 
-// Preflight check: respond early to OPTIONS
-//if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-//   http_response_code(200); // Send HTTP OK
-//   exit(); // Stop further execution
-//}
+$OrderGrp = $_POST['OrderGrp'] ?? null;
 
-// For POST/GET: respond with 200 if needed
-//if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
-//   http_response_code(200); // This is optional — most servers default to 200 if not error
-//}
+$connection = mysqli_connect(hostname: DB_SERVER, username: DB_USERNAME, password: DB_PASSWORD);
+if (mysqli_connect_errno()) {
+    echo "Failed to connect to MySQL: " .mysqli_onnecterror();
+ }
+$database = mysqli_select_db(mysql: $connection, database: DB_DATABASE);
 
-/**
- * Updates the inventory and sold quantity when an item is sold.
- *
- * This function decreases the inventory stock and increases the number of items sold
- * in the Inventory table based on the quantity of items sold.
- *
- * @param mysqli $_connection The database connection object.
- * @param int $_inventoryID The ID of the inventory item being sold.
- * @param int $_quantity The quantity of the item being sold.
- * 
- * @return void This function does not return any value. It updates the inventory data.
- */
 function SoldInventory($_connection, $_inventoryID, $_quantity): void
 {
    ChangeStock($_connection, $_inventoryID, -$_quantity);
@@ -119,3 +104,14 @@ function ConfirmOrderGroup($_connection ,$_orderGroup)
    }
 
 }
+
+
+
+
+ConfirmOrderGroup($connection ,$OrderGrp);
+echo json_encode([
+   "success" => true,
+   "message" => "Order Confirmed.",
+]);
+
+?>
