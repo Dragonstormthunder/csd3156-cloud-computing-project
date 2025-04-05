@@ -392,18 +392,53 @@
       $SofaName = "sofa";
       $additionalFormatting = "0";
 
+      $sofaDesc = array(
+         "A modern blue velvet sofa with a sleek silhouette, ideal for contemporary living rooms.",
+         "Minimalist gray fabric sofa with clean lines, perfect for a sophisticated and neutral décor.",
+         "Compact mustard-yellow loveseat with a tufted back, great for small apartments or reading nooks.",
+         "Cozy white and beige sofa with colorful cushions, adding warmth and comfort to any space.",
+         "Vibrant yellow mid-century sofa with wooden legs, bringing energy and style to modern interiors.",
+         "Industrial-style black leather sofa with metal legs, ideal for loft spaces and contemporary homes.",
+         "Classic brown fabric sofa with plush cushions, offering a timeless and inviting appeal.",
+         "Elegant blue velvet sofa with a tufted back, perfect for a luxurious living space.",
+         "Simple and modern white sofa, a versatile choice for minimalist and Scandinavian interiors.",
+         "Unique green modular floor sofa, great for casual lounging and creative spaces.",
+         "Chic pink accent chair with a rounded back, adding a touch of elegance to any corner.",
+         "Stylish blue and yellow sectional sofa, offering both comfort and modern aesthetics.",
+         "Futuristic gray curved sofa, making a statement in contemporary interiors.",
+         "Warm-toned brown and red cushioned sofa, creating a cozy and inviting atmosphere.",
+         "Vintage-inspired green velvet sofa with rolled arms, exuding classic elegance.",
+         "Sunlit cream-colored sofa with a sleek design, perfect for a bright and airy living room.",
+         "Bold orange leather sofa with a minimalist frame, ideal for a modern and stylish home.",
+         "Light gray fabric sofa with a contemporary touch, fitting seamlessly into any décor.",
+         "Spacious L-shaped sofa in soft gray, offering both comfort and functionality for families.",
+         "Luxurious golden draped sofa setting, ideal for elegant and dramatic interiors.",
+         "Classic blue sofa with a tufted back and rolled arms, perfect for a refined look.",
+         "Rich brown leather Chesterfield sofa, a timeless piece for sophisticated spaces.",
+         "Mid-century modern caramel leather sofa with wooden legs, combining retro and contemporary charm.",
+         "Deep green velvet sofa with a streamlined design, bringing a touch of luxury to any room.",
+         "Elegant dark gray sectional sofa with plush seating, ideal for modern homes.",
+         "Cozy beige sofa set in a stylish living room, creating a warm and inviting feel.",
+         "Natural wood and fabric sofa with a bohemian vibe, perfect for relaxed interiors.",
+         "Dark navy-blue velvet sofa with gold accents, adding a luxurious touch to any setting.",
+         "Soft white fabric sofa with a cozy throw, great for a minimalist and serene look.",
+         "Neutral beige sofa with modern cushions, a versatile choice for any home style."
+     );
+
       for($i = 0; $i < 30 ;++$i)
       {
          if($i == 10)
          {
             $additionalFormatting = "";
          }
-         LoadInventory($connection,$inventoryText . $i ,$sofaImageFileLoc . $SofaName . $additionalFormatting . $i . ".jpg",10.00,$sofaImageFileLoc . $SofaName . $additionalFormatting . $i . ".jpg",10,0,2);
+         LoadInventory($connection,$inventoryText . $i ,$sofaDesc[$i],10.00,$sofaImageFileLoc . $SofaName . $additionalFormatting . $i . ".jpg",10,0,2);
       }
 
       //LoadInventory($connection,"inventory1","description",10.00,"test_image.jpg",10,0,2);
       //LoadInventory($connection,"inventory2","description",10.00,"test_image.jpg",10,0,2);
       //LoadAccount($connection,"test_image.jpg","customer2","password");
+
+
       AddOrders($connection,2,1,1,1,1,'2025-03-30 12:00:00');
       AddOrders($connection,2,1,3,1,1,'2025-03-30 12:00:00');
       AddOrders($connection,3,1,1,1,2,'2025-03-30 12:01:00');
