@@ -66,7 +66,7 @@ function TableExists($tableName, $connection, $dbName) {
    $_numberSold = 0;
 
 
-   if ($stmt = mysqli_prepare($_connection, $query)) {
+   if ($stmt = mysqli_prepare($connection, $query)) {
       // Bind the parameters to the placeholders
       mysqli_stmt_bind_param($stmt, 'ssdssis', $_name, $_description, $_price, $_imagePath, $_numberInStock,
        $_sellerID, $_numberSold);
