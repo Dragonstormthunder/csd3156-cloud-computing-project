@@ -9,4 +9,4 @@
  * @brief   This file declares the constants.
  */
 
-export const API_URL = "http://localhost:4173";
+export const PHP_URL = "http://localhost:4173";
