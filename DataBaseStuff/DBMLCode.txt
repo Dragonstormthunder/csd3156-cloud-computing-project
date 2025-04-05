@@ -1,41 +1,34 @@
-// Use DBML to define your database structure
-https://dbdiagram.io/d
-
-//all account ids are integers
-//all order ids are integers
-//assuming price doesnt change ever
 Table Account {
-  AccountID integer [primary key]
-  ProfileImage varchar [not null]
-  Username varchar [not null]
-  Password varchar [not null]
+  AccountID int [pk, increment] 
+  ProfileImage varchar(400)
+  Username varchar(20) [not null]
+  Password varchar(20) [not null]
 }
 
-Table Inventory
-{
-  InventoryID integer [primary key]
-  Name varchar [not null]
-  Description varchar
-  Price integer [not null]
-  Image varchar 
-  NumberInStock integer [not null]
-  SellerID integer [not null]
-  NumberSold integer [not null]
+Table Inventory {
+  InventoryID int [pk, increment]
+  Name varchar(255) [not null]
+  Description text
+  Price int [not null]
+  Image varchar(400)
+  NumberInStock int [not null]
+  SellerID int [not null]
+  NumberSold int [not null]
 }
 
-Ref: Account.AccountID < Inventory.SellerID
+Ref SellerID: Inventory.SellerID > Account.AccountID
 
-Table Orders
-{
-  OrderID integer [primary key]
-  CustomerID integer [not null]
-  SellerID integer [not null]
-  InventoryID integer [not null]
-  Quantity integer [not null]
-  OrderGroupID integer [not null]
+Table Orders {
+  OrderID int [pk, increment]
+  CustomerID int [not null]
+  SellerID int [not null]
+  InventoryID int [not null]
+  Quantity int [not null]
+  OrderGroupID int [not null]
   Timestamp timestamp [not null]
+  OrderConfirmed bool [not null]
 }
 
-Ref : Account.AccountID < Orders.CustomerID
-Ref : Account.AccountID < Orders.SellerID
-Ref : Inventory.InventoryID < Orders.InventoryID
+Ref CustomerID: Orders.CustomerID > Account.AccountID
+Ref SellerID: Orders.SellerID > Account.AccountID
+Ref InventoryID: Orders.InventoryID > Inventory.InventoryID
