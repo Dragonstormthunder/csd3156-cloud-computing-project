@@ -1,4 +1,14 @@
-import React from 'react';
+/*!************************************************************************
+ * \file Profile.jsx
+* \author	 Kenzie Lim  | kenzie.l\@digipen.edu
+ * \par Course: CSD3156
+ * \date 25/03/2025
+ * \brief
+ * This file defines the frontend for Profile Page.
+ *
+ * Copyright 2025 DigiPen Institute of Technology Singapore All Rights Reserved
+ **************************************************************************/
+import React, {useState, useEffect} from 'react';
 import {Box,
     Avatar,
     Button,
@@ -8,9 +18,45 @@ import {Box,
     Paper} from '@mui/material';
 import {Link, useLocation} from 'wouter'
 import AppBarComponent from './AppBarComponent.jsx';
+import { PHP_URL } from "./AppInclude.jsx";
+import axios from 'axios';
 
 const Profile = () => {
+    const profileID = sessionStorage.getItem('persistedId');
     const [, setLocation] = useLocation();
+    const [open, setOpen] = React.useState(true);
+    const [profile, setProfile] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchData = async() => {
+      try {
+        setLoading(true);
+        const {data} = await axios.get(`${PHP_URL}/GetProfileInfo.php`, {
+          params: {
+            ID: profileID
+          }
+        });
+        setProfile(data);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch product');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      if (profileID) {
+        fetchData();
+        // console.log('in profile');
+      }
+      
+    }, [profileID]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!profile) return <div>No profile found</div>;
+
     return <>
     <AppBarComponent/>
     <Box
@@ -28,16 +74,16 @@ const Profile = () => {
           {/* Flex container for the image and heading */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <Avatar 
-              alt={profileData.name}
-              src={profileData.profileImage}
+              alt={profile[0].Name}
+              src={profile[0].PFP}
               sx={{ width: 88, height: 88 }}
             />
             <div>
               <h1 style={{ margin: 0 }}>
-                {`${profileData.name}`}
+                {`${profile[0].Name}`}
               </h1>
               <p style={{ display:'flex', justifyContent: 'start', color: 'grey', margin: 0}}>
-                {profileData.username}
+                {profile[0].Name}
               </p>
             </div>
           </div>
@@ -45,23 +91,23 @@ const Profile = () => {
           <h3 style={{ display:'flex', justifyContent: 'start', margin: 0}}>Your Top Listings</h3>
           
           <ImageList cols={3} gap={8}>
-            {first3ListingsData.map((item) => (
+            {profile.slice(0,3).map((item) => (
               <ImageListItem 
-              key={item.img}
-              onClick={()=>setLocation(`/ViewProduct#${item.productNumber}`)}
+              key={item.InventoryID}
+              onClick={()=>setLocation(`/ViewProduct#${item.InventoryID}`)}
               style={{ cursor: 'pointer' }}>
                 <img
-                  srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                  src={`${item.img}?w=248&fit=crop&auto=format`}
-                  alt={item.title}
+                  srcSet={`${item.InventoryImage}`}
+                  src={`${item.InventoryImage}`}
+                  alt={item.InventoryName}
                   loading="lazy"
                 />
                 <ImageListItemBar
-                title={item.title}
+                title={item.InventoryName}
                 subtitle={
                 <div className='subtitile_div'>
-                    <span>by: {item.author}</span>
-                    <span className='item_price'>{item.price}</span>
+                    <span>by: {item.Name}</span>
+                    <span className='item_price'>{`\$${item.Inventoryprice}`}</span>
                 </div>}
                 position="below"
               />
@@ -71,10 +117,8 @@ const Profile = () => {
 
           <Button
             style={{width:'200px', margin: '0 auto'}}
-            component={Link} 
-            variant="contained" 
-            href="/CreateListings"
-            onClick={() => handleLogin()}
+            variant="contained"
+            onClick={()=>setLocation(`/CreateListings/${profileID}`)}
             sx={{
               borderRadius: 2,
               px: 3,
@@ -90,37 +134,5 @@ const Profile = () => {
     </Box>
     </>
 }
-
-const profileData = 
-{
-  profileImage: 'https://images.unsplash.com/photo-1511697073354-8db0d2a165dd',
-  name: 'Remy Sharp',
-  username: 'swabdesign',
-  id: '099'
-};
-
-const first3ListingsData = [
-  {
-    img: 'https://images.unsplash.com/photo-1549388604-817d15aa0110',
-    price: '$10',
-    title: 'Bed',
-    author: 'swabdesign',
-    productNumber: '01'
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1525097487452-6278ff080c31',
-    price: '$10',
-    title: 'Books',
-    author: 'swabdesign',
-    productNumber: '02'
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1523413651479-597eb2da0ad6',
-    price: '$10',
-    title: 'Sink',
-    author: 'swabdesign',
-    productNumber: '03'
-  },
-];
 
 export {Profile};

@@ -1,3 +1,14 @@
+/*!************************************************************************
+ * \file ViewProduct.jsx
+* \author	 Kenzie Lim  | kenzie.l\@digipen.edu
+ * \par Course: CSD3156
+ * \date 25/03/2025
+ * \brief
+ * This file defines the frontend for ViewProduct Page.
+ *
+ * Copyright 2025 DigiPen Institute of Technology Singapore All Rights Reserved
+ **************************************************************************/
+
 import React, { useState, useEffect } from 'react';
 import {Box,
     TextField, 
@@ -18,11 +29,14 @@ import {Link, useLocation} from 'wouter'
 import AppBarComponent from './AppBarComponent.jsx';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { PHP_URL } from "./AppInclude.jsx";
+import axios from 'axios';
 
-const AddToCartButton = ({ initialQuantity = 0, maxQuantity = 10 }) => {
+const AddToCartButton = ({ initialQuantity = 0, maxQuantity = 10, tmp, customerID }) => {
   const [quantity, setQuantity] = React.useState(initialQuantity);
   const [isExpanded, setIsExpanded] = React.useState(initialQuantity > 0);
   const [, setLocation] = useLocation();
+  const id = sessionStorage.getItem('persistedId');
 
   useEffect(() => {
     if (quantity === 0) {
@@ -52,8 +66,27 @@ const AddToCartButton = ({ initialQuantity = 0, maxQuantity = 10 }) => {
     if (quantity === 0) {
       setIsExpanded(false);
     }
-    console.log(`Quantity set to ${quantity}`);
-    setLocation('/Catalogue');
+    // console.log(`product ${JSON.stringify(product[0])}`)
+    // console.log(`product ${parseInt(product[0].Stock) - quantity}`)
+    axios.post(`${PHP_URL}/PushAddCart.php`, {
+      CustomerID: customerID,
+      SellerID: tmp.SellerID,
+      InventoryID: tmp.ID,
+      Quant: quantity,
+    },{
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
+
+    setLocation(`/Catalogue/${id}`);
   };
 
   return (
@@ -143,10 +176,45 @@ const AddToCartButton = ({ initialQuantity = 0, maxQuantity = 10 }) => {
 const ViewProduct = () => {
   const productID = window.location.hash.split('#')[1];
   const [open, setOpen] = React.useState(true);
+  const [product, setProduct] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [profileID, setProfileID] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchData = async() => {
+    try {
+      setLoading(true);
+      const {data} = await axios.get(`${PHP_URL}/GetProductInfo.php`, {
+        params: {
+          ID: productID
+        }
+      });
+      setProduct(data);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch product');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (productID) {
+      fetchData();
+    }
+    
+  }, [productID]);
 
   const handleClick = () => {
     setOpen(!open);
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!product) return <div>No product found</div>;
+
+  // console.log(product);
+  // console.log(profile);
 
   return <>
     <AppBarComponent/>
@@ -164,22 +232,22 @@ const ViewProduct = () => {
         <Paper sx={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Flex container for the image and heading */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <img src={productData.img} alt="product " style={{ width: '400px', height: 'auto' }} />
+            <img src={product[0].Image} alt="product " style={{ width: '400px', height: 'auto' }} />
             <div>
-              <h1 style={{ margin: 0, display: 'flex' }}>{`${productData.title}`}</h1>
-              <Link href="/Profile">
+              <h1 style={{ margin: 0, display: 'flex', fontSize: '2.9em' }}>{`${product[0].Name}`}</h1>
+              <Link href={`/Profile/${product[0].SellerID}`}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px',  cursor: "pointer"}}>
                   <Avatar 
-                    alt={`${profileData.name}`}
-                    src={`${profileData.profileImage}`}
+                    alt={`${product[0].SellerUserName}`}
+                    src={`${product[0].SellerProfilePicture}`}
                     sx={{ width: 24, height: 24 }}
                   />
                   <p style={{ display:'flex', justifyContent: 'start', color: 'grey', margin: 0}}>
-                      {`${profileData.username}`}
+                      {`${product[0].SellerUserName}`}
                   </p>
                 </div>
               </Link>
-              <p style={{ display: 'flex', fontSize: '1.7em', fontWeight: 'bold' }}>{productData.price}</p>
+              <p style={{ display: 'flex', fontSize: '1.7em', fontWeight: 'bold' }}>{`\$${product[0].Price}`}</p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around'}}>
@@ -194,38 +262,13 @@ const ViewProduct = () => {
             </IconButton>
           </div>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <p style={{ margin: 0, display: 'flex' }}>{productData.description}</p>
+            <p style={{ margin: 0, display: 'flex' }}>{product[0].Description}</p>
           </Collapse>
-          
-          {/* <Button
-            style={{width:'200px', margin: '0 auto'}}
-            variant="contained" 
-            onClick={() => handleLogin()}
-          >
-            Add to Cart
-          </Button> */}
 
-          <AddToCartButton style={{width:'200px', margin: '0 auto'}}/>
+          <AddToCartButton style={{width:'200px', margin: '0 auto'}} tmp={product[0]} customerID={product[0].SellerID}/>
         </Paper>
     </Box>
     </>
 }
-
-const productData = {
-    img: 'https://images.unsplash.com/photo-1549388604-817d15aa0110',
-    price: '$10',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    title: 'Bed',
-    author: 'swabdesign',
-    productNumber: '01'
-};
-
-const profileData = 
-{
-  profileImage: 'https://images.unsplash.com/photo-1511697073354-8db0d2a165dd',
-  name: 'Remy Sharp',
-  username: 'swabdesign',
-  id: '099'
-};
 
 export {ViewProduct};
