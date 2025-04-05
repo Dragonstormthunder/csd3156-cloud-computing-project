@@ -446,6 +446,7 @@
                Quantity INT(10) NOT NULL,
                OrderGroupID INT(11) NOT NULL,
                Timestamp TIMESTAMP NOT NULL,
+               OrderConfirmed BOOL NOT NULL,
                FOREIGN KEY (CustomerID) REFERENCES Account(AccountID),
                FOREIGN KEY (SellerID) REFERENCES Account(AccountID),
                FOREIGN KEY (InventoryID) REFERENCES Inventory(InventoryID)
@@ -736,18 +737,19 @@
     * @param int $_inventoryID The ID of the inventory item being ordered.
     * @param int $_quantity The quantity of the item being ordered.
     * @param int $_orderGroupID The group ID to associate orders within a group.
+    * @param bool $_orderConfirmed The boolean if the order is confirmed
     * @param string $_timeStamp The timestamp when the order was placed.
     * 
     * @return void This function does not return any value. It performs an insert operation.
     */
-   function LoadOrders($_connection,$_customerID,$_sellerID,$_inventoryID,$_quantity,$_orderGroupID,$_timeStamp)
+   function LoadOrders($_connection,$_customerID,$_sellerID,$_inventoryID,$_quantity,$_orderGroupID,$_timeStamp,$_orderConfirmed)
    {
-      $query = "INSERT INTO Orders ( `CustomerID`, `SellerID`, InventoryID, `Quantity`,OrderGroupID ,`Timestamp`) 
-      VALUES ( ?, ?, ?, ?, ?,?)";
+      $query = "INSERT INTO Orders ( `CustomerID`, `SellerID`, InventoryID, `Quantity`,OrderGroupID ,`Timestamp`,'OrderConfirmed') 
+      VALUES ( ?, ?, ?, ?, ?,?,?)";
 
       if ($stmt = mysqli_prepare($_connection, $query)) {
          // Bind the parameters to the placeholders
-         mysqli_stmt_bind_param($stmt, 'iiiiis', $_customerID, $_sellerID,$_inventoryID, $_quantity, $_orderGroupID, $_timeStamp);
+         mysqli_stmt_bind_param($stmt, 'iiiiisi', $_customerID, $_sellerID,$_inventoryID, $_quantity, $_orderGroupID, $_timeStamp,$_orderConfirmed);
 
          // Execute the statement
          if (mysqli_stmt_execute($stmt)) {
@@ -878,7 +880,7 @@
    {
       if(CheckStock($_connection,$_inventoryID,$_quantity))
       {
-         LoadOrders($_connection,$_customerID,$_sellerID,$_inventoryID,$_quantity,$_orderGroupID,$_timeStamp);
+         LoadOrders($_connection,$_customerID,$_sellerID,$_inventoryID,$_quantity,$_orderGroupID,$_timeStamp,true);
          SoldInventory($_connection,$_inventoryID,$_quantity);
       }
       else
